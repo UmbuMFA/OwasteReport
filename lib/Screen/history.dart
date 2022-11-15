@@ -12,12 +12,10 @@ class history extends StatefulWidget {
 }
 
 class _historyState extends State<history> {
-  
-  final Stream<QuerySnapshot> _usersStream =
-      FirebaseFirestore.instance.collection('report').snapshots();
+  final CollectionReference<Map<String, dynamic>> _usersStream =
+      FirebaseFirestore.instance.collection('report');
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       // floatingActionButton: FloatingActionButton(
       //   onPressed: () {
@@ -38,7 +36,7 @@ class _historyState extends State<history> {
         centerTitle: true,
       ),
       body: StreamBuilder(
-        stream: _usersStream,
+        stream: _usersStream.snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {
             return Text("something is wrong");
@@ -56,16 +54,24 @@ class _historyState extends State<history> {
             child: ListView.builder(
               itemCount: snapshot.data!.docs.length,
               itemBuilder: (_, index) {
+                final DocumentSnapshot<Object?> documentSnapshot =
+                    snapshot.data!.docs[index];
                 return GestureDetector(
-                  // onTap: () {
-                  //   Navigator.pushReplacement(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //       builder: (_) =>
-                  //           editnote(docid: snapshot.data!.docs[index]),
-                  //     ),
-                  //   );
-                  // },
+                  onTap: () {
+                    // Navigator.pushReplacement(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (_) =>
+                    //         editReport(docid: snapshot.data!.docs[index]),
+                    //   ),
+                    // );
+
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ReportDetailsView(
+                                documentSnapshot: documentSnapshot)));
+                  },
                   child: Column(
                     children: [
                       SizedBox(
@@ -86,11 +92,16 @@ class _historyState extends State<history> {
                               // width: 40,
                               // height: 160,
                               padding: EdgeInsets.only(top: 20.0),
-                              child: Icon(Icons.recycling_outlined,
-                                  color: Color.fromARGB(255, 255, 255, 255)),
+                              // child: Icon(Icons.recycling_outlined,
+                              //     color: Color.fromARGB(255, 255, 255, 255)),
+                              child: Image(
+                                image: NetworkImage(
+                                    documentSnapshot["image"].toString()),
+                              ),
                             ),
                             title: Text(
-                              snapshot.data!.docChanges[index].doc['kategori'],
+                              // snapshot.data!.docChanges[index].doc['kategori'],
+                              documentSnapshot.get('kategori'),
                               style: TextStyle(
                                   color: Color.fromARGB(255, 255, 255, 255),
                                   fontWeight: FontWeight.bold),
@@ -104,8 +115,7 @@ class _historyState extends State<history> {
                                       child: Padding(
                                           padding: EdgeInsets.only(right: 0.0),
                                           child: Text(
-                                              snapshot.data!.docChanges[index]
-                                                  .doc['status'],
+                                              documentSnapshot.get('status'),
                                               style: TextStyle(
                                                   color: Color.fromARGB(
                                                       255, 255, 255, 255)))),
@@ -113,28 +123,26 @@ class _historyState extends State<history> {
                                 Expanded(
                                   flex: 6,
                                   child: Padding(
-                                      padding: EdgeInsets.only(left: 10.0),
-                                      // child: TextButton(
-                                      //   onPressed: () {
-                                      //     Navigator.push(
-                                      //       context,
-                                      //       MaterialPageRoute(
-                                      //           builder: (context) =>
-                                      //               // ReportDetailsView(
-                                      //               //     report: Report.fromSnapshot(docId)
-                                      //               //     )
-                                      //                   ),
-                                      //     );
-                                      //   },
-                                      //   child: Text(
-                                      //       snapshot.data!.docChanges[index]
-                                      //           .doc['addres']
-                                      //           .toString(),
-                                      //       style: TextStyle(
-                                      //           color: Color.fromARGB(
-                                      //               255, 246, 246, 246))),
-                                      // )
-                                      ),
+                                    padding: EdgeInsets.only(left: 10.0),
+                                    // child: TextButton(
+                                    //   onPressed: () {
+                                    //     Navigator.push(
+                                    //       context,
+                                    //       MaterialPageRoute(
+                                    //           builder: (context) =>
+                                    //               // ReportDetailsView(
+                                    //               //     report: Report.fromSnapshot(docId)
+                                    //               //     )
+                                    //                   ),
+                                    //     );
+                                    //   },
+                                    child: Text(
+                                        documentSnapshot["addres"].toString(),
+                                        style: TextStyle(
+                                            color: Color.fromARGB(
+                                                255, 246, 246, 246))),
+                                    // )
+                                  ),
                                 )
                               ],
                             ),

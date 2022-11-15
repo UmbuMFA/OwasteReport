@@ -3,10 +3,11 @@ import 'package:app_waste_report/Screen/home.dart';
 import 'package:app_waste_report/Screen/login.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:path/path.dart' as p;
 import 'package:image_picker/image_picker.dart';
@@ -23,8 +24,9 @@ class LocationPage extends StatefulWidget {
 class _LocationPageState extends State<LocationPage> {
   final _formkey = GlobalKey<FormState>();
 
-  firebase_storage.FirebaseStorage storage =
-      firebase_storage.FirebaseStorage.instance;
+  // firebase_storage.FirebaseStorage storage =
+  //     firebase_storage.FirebaseStorage.instance;
+  UploadTask? uploadTask;
 
   File? _photo;
   final ImagePicker _picker = ImagePicker();
@@ -53,6 +55,8 @@ class _LocationPageState extends State<LocationPage> {
   String? _currentAddress;
   Position? _currentPosition;
   File? imageFile;
+  String? _imgUrl;
+  var urlDownload;
 
   Future<bool> _handleLocationPermission() async {
     bool serviceEnabled;
@@ -123,21 +127,25 @@ class _LocationPageState extends State<LocationPage> {
     });
   }
 
-  Future uploadFile() async {
-    if (_photo == null) return;
-
+  Future <void> uploadFile() async {
+    
     final fileName = p.basename(_photo!.path);
     var destination = 'files/$fileName';
+      final ref = FirebaseStorage.instance
+          .ref()
+          .child(destination);
+      uploadTask = ref.putFile(_photo!);
+      print(uploadTask);
 
-    try {
-      final ref = firebase_storage.FirebaseStorage.instance
-          .ref(destination)
-          .child('file/');
-      await ref.putFile(_photo!);
-    } catch (e) {
-      print('error occured');
-    }
+      // ignore: unused_local_variable
+      final snapshot = await uploadTask!.whenComplete(() {});
+      urlDownload =  await snapshot.ref.getDownloadURL();
+        setState (() {
+          _imgUrl = '$urlDownload';
+        });
+    
   }
+
 
   static HexColor kBgColor = HexColor('e7ded7');
 
@@ -169,8 +177,8 @@ class _LocationPageState extends State<LocationPage> {
                   )),
                   padding: const EdgeInsets.only(
                       left: 0, top: 8, right: 0, bottom: 8),
-                  child: const Text(
-                    "Laporkan Penemuan Sampah!!!",
+                  child: Text(
+                    'Laporkan Penemuan Sampah!!!',
                     style: TextStyle(
                         color: Color.fromARGB(255, 0, 0, 0), fontSize: 30),
                     textAlign: TextAlign.center,
@@ -224,6 +232,9 @@ class _LocationPageState extends State<LocationPage> {
                     const SizedBox(
                       height: 30,
                     ),
+                    Text(
+                      '${_imgUrl?? ""}'
+                    ),
                     SizedBox(
                       width: 300,
                       height: 50,
@@ -233,7 +244,7 @@ class _LocationPageState extends State<LocationPage> {
                           print('Foto Telah Dipilih');
                         },
                         style: ElevatedButton.styleFrom(primary: Colors.amber),
-                        child: const Text(
+                        child: Text(
                           'Tambahkan Gambar',
                           style: TextStyle(color: Colors.white),
                         ),
@@ -303,6 +314,7 @@ class _LocationPageState extends State<LocationPage> {
                               uploadFile();
                               ref.add({
                                 'kategori': _currentItemSelected,
+                                'image': _imgUrl,
                                 'addres': _currentAddress,
                                 'status': _currentItemSelected2,
                               }).whenComplete(() {
