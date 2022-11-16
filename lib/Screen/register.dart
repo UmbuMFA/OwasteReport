@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '/Screen/login.dart';
 import '/Models/users.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 
 class MyRegister extends StatefulWidget {
   @override
@@ -32,7 +33,6 @@ class _MyRegisterState extends State<MyRegister> {
   ];
   var _currentItemSelected = "User";
   var rool = "Admin";
-
 
   @override
   Widget build(BuildContext context) {
@@ -201,15 +201,13 @@ class _MyRegisterState extends State<MyRegister> {
                         TextButton(
                           onPressed: () {
                             setState(() {
-                                  showProgress = true;
-                                });
-                                signUp(emailController.text,
-                                     nameController.text,
-                                    passwordController.text,
-                                    rool);
+                              showProgress = true;
+                            });
+                            signUp(emailController.text, nameController.text,
+                                passwordController.text, rool);
                           },
                           child: const Text(
-                            'Sign In',
+                            'Sign Up',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 27,
@@ -223,10 +221,8 @@ class _MyRegisterState extends State<MyRegister> {
                           child: IconButton(
                             color: Colors.white,
                             onPressed: () {
-                              signUp(emailController.text,
-                                     nameController.text,
-                                    passwordController.text,
-                                    rool);
+                              signUp(emailController.text, nameController.text,
+                                  passwordController.text, rool);
                             },
                             icon: const Icon(Icons.arrow_forward),
                           ),
@@ -241,12 +237,12 @@ class _MyRegisterState extends State<MyRegister> {
                         TextButton(
                           onPressed: () {
                             CircularProgressIndicator();
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => MyLogin(),
-                                  ),
-                                );
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MyLogin(),
+                              ),
+                            );
                           },
                           child: const Text(
                             'Login',
@@ -267,17 +263,21 @@ class _MyRegisterState extends State<MyRegister> {
     );
   }
 
-    void signUp(String email,String name, String password, String rool) async {
+  void signUp(String email, String name, String password, String rool) async {
     CircularProgressIndicator();
     if (_formkey.currentState!.validate()) {
       await _auth
           .createUserWithEmailAndPassword(email: email, password: password)
-          .then((value) => {postDetailsToFirestore(email, name,rool )})
+          .then((value) => {postDetailsToFirestore(email, name, rool)})
           .catchError((e) {});
     }
   }
 
-  postDetailsToFirestore(String email, String name,String rool, ) async {
+  postDetailsToFirestore(
+    String email,
+    String name,
+    String rool,
+  ) async {
     FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
     User? user = _auth.currentUser;
     UserModel userModel = UserModel();
@@ -290,9 +290,23 @@ class _MyRegisterState extends State<MyRegister> {
         .doc(user.uid)
         .set(userModel.toMap());
 
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => const MyLogin()));
+    // DialogError('Salamat', 'Anda Telah melakukan Pendaftaran');
+    // Navigator.pushReplacement(
+    //     context, MaterialPageRoute(builder: (context) => const MyLogin()));
+    dialogSucces('Anda Telah Melakukan Pendaftaran', 'Lanjut ke Login');
   }
 
-
+  dialogSucces(String title, String desc) {
+    return AwesomeDialog(
+      context: context,
+      dialogType: DialogType.success,
+      animType: AnimType.rightSlide,
+      title: title,
+      desc: desc,
+      btnOkOnPress: () {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => const MyLogin()));
+      },
+    ).show();
+  }
 }

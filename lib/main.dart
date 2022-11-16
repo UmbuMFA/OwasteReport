@@ -1,4 +1,5 @@
 // import 'package:app_waste_report/Screen/history.dart';
+import 'package:app_waste_report/Screen/welcome_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 // import 'Screen/login.dart';
@@ -22,7 +23,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Colors.blue[900],
       ),
-      home: MyRegister(),
+      // home: MyRegister(),
+      home: WelcomePage(),
     );
   }
 }

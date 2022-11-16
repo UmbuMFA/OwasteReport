@@ -1,6 +1,9 @@
 import 'package:app_waste_report/Screen/history.dart';
 import 'package:app_waste_report/Screen/home.dart';
 import 'package:app_waste_report/Screen/login.dart';
+import 'package:app_waste_report/Screen/profil.dart';
+import 'package:app_waste_report/Screen/validate_screen.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -127,25 +130,43 @@ class _LocationPageState extends State<LocationPage> {
     });
   }
 
-  Future <void> uploadFile() async {
-    
-    final fileName = p.basename(_photo!.path);
-    var destination = 'files/$fileName';
-      final ref = FirebaseStorage.instance
-          .ref()
-          .child(destination);
-      uploadTask = ref.putFile(_photo!);
-      print(uploadTask);
-
-      // ignore: unused_local_variable
-      final snapshot = await uploadTask!.whenComplete(() {});
-      urlDownload =  await snapshot.ref.getDownloadURL();
-        setState (() {
-          _imgUrl = '$urlDownload';
+  dialogSucces(String title, String desc) {
+    return AwesomeDialog(
+      context: context,
+      dialogType: DialogType.success,
+      animType: AnimType.rightSlide,
+      title: title,
+      desc: desc,
+      btnOkOnPress: () {
+        uploadFile();
+        ref.add({
+          'kategori': _currentItemSelected,
+          'image': _imgUrl,
+          'addres': _currentAddress,
+          'status': _currentItemSelected2,
+        }).whenComplete(() {
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => LocationPage()));
+          Text('Laporan Anda Telah dikirim');
         });
-    
+      },
+    ).show();
   }
 
+  Future<void> uploadFile() async {
+    final fileName = p.basename(_photo!.path);
+    var destination = 'files/$fileName';
+    final ref = FirebaseStorage.instance.ref().child(destination);
+    uploadTask = ref.putFile(_photo!);
+    print(uploadTask);
+
+    // ignore: unused_local_variable
+    final snapshot = await uploadTask!.whenComplete(() {});
+    urlDownload = await snapshot.ref.getDownloadURL();
+    setState(() {
+      _imgUrl = '$urlDownload';
+    });
+  }
 
   static HexColor kBgColor = HexColor('e7ded7');
 
@@ -153,16 +174,19 @@ class _LocationPageState extends State<LocationPage> {
   Widget build(BuildContext context) {
     return Container(
         decoration: BoxDecoration(
-          color:  kBgColor,
-          // image: DecorationImage(
-          //     image: AssetImage('images/register.png'), fit: BoxFit.cover),
+          // color: kBgColor,
+          image: DecorationImage(
+              image: AssetImage('images/register.png'), fit: BoxFit.cover),
         ),
         child: Scaffold(
             appBar: AppBar(
               leading: IconButton(
                   icon: Icon(Icons.arrow_back, color: Colors.black),
-                  onPressed: () => Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => HomePage()))),
+                  onPressed: () => 
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) => ValidatePage()))
+                  // Navigator.pop(context)    
+                      ),
               backgroundColor: Colors.transparent,
               elevation: 0,
             ),
@@ -232,9 +256,7 @@ class _LocationPageState extends State<LocationPage> {
                     const SizedBox(
                       height: 30,
                     ),
-                    Text(
-                      '${_imgUrl?? ""}'
-                    ),
+                    Text('${_imgUrl ?? ""}'),
                     SizedBox(
                       width: 300,
                       height: 50,
@@ -311,17 +333,7 @@ class _LocationPageState extends State<LocationPage> {
                         children: [
                           ElevatedButton(
                             onPressed: () {
-                              uploadFile();
-                              ref.add({
-                                'kategori': _currentItemSelected,
-                                'image': _imgUrl,
-                                'addres': _currentAddress,
-                                'status': _currentItemSelected2,
-                              }).whenComplete(() {
-                                Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => history()));
-                                Text('Laporan Anda Telah dikirim');
-                              });
+                              dialogSucces('Laporan Telah Terkirim', 'Terimakasih Telah Melaporkan sampah');
                             },
                             style:
                                 ElevatedButton.styleFrom(primary: Colors.green),

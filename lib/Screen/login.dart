@@ -1,5 +1,7 @@
 import 'package:app_waste_report/Screen/home.dart';
 import 'package:app_waste_report/Screen/register.dart';
+import 'package:app_waste_report/Screen/validate_screen.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 
 import '/Screen/location.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -192,26 +194,48 @@ class _MyLoginState extends State<MyLogin> {
   void signIn(String email, String password) async {
     if (_formkey.currentState!.validate()) {
       try {
-        UserCredential userCredential =
-            await FirebaseAuth.instance.signInWithEmailAndPassword(
+        FirebaseAuth.instance.signInWithEmailAndPassword(
           email: email,
           password: password,
         );
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) =>
-                // LocationPage(),
-                HomePage(),
-          ),
-        );
+        dialogSucces('Anda Berhasil Login', 'Lanjut ke Halaman Home');
       } on FirebaseAuthException catch (e) {
         if (e.code == 'user-not-found') {
-          print('No user found for that email.');
+          dialogError(
+              'User tidak Ditemukan', 'Pastikan User anda telah terdaftar');
         } else if (e.code == 'wrong-password') {
-          print('Wrong password provided for that user.');
+          dialogError('Passwerd Salah', 'Masukkan Password yang sesuai');
         }
       }
     }
+  }
+
+  dialogSucces(String title, String desc) {
+    return AwesomeDialog(
+      context: context,
+      dialogType: DialogType.success,
+      animType: AnimType.rightSlide,
+      title: title,
+      desc: desc,
+      btnOkOnPress: () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ValidatePage(),
+          ),
+        );
+      },
+    ).show();
+  }
+
+  dialogError(String title, String desc) {
+    return AwesomeDialog(
+      context: context,
+      dialogType: DialogType.error,
+      animType: AnimType.rightSlide,
+      title: title,
+      desc: desc,
+      btnOkOnPress: () {},
+    ).show();
   }
 }

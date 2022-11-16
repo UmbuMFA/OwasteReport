@@ -7,21 +7,20 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class HomePageUser extends StatefulWidget {
+  const HomePageUser({Key? key}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePageUser> {
   int _selectedIndex = 0;
   void _navigateBattomBar(int index) {
     setState(() {
       _selectedIndex = index;
     });
   }
-    static HexColor kBgColor = HexColor('e7ded7');
 
 
   final List<Widget> _pages = [
@@ -82,7 +81,6 @@ class _HomePageState extends State<HomePage> {
       ),
     ),
     LocationPage(),
-    history(),
     Profil(),
     // ReportDetailsView(report: report,)
   ];
@@ -100,7 +98,6 @@ class _HomePageState extends State<HomePage> {
           items: [
             BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
             BottomNavigationBarItem(icon: Icon(Icons.receipt_outlined), label: 'Report'),
-            BottomNavigationBarItem(icon: Icon(Icons.history), label: 'History'),
             BottomNavigationBarItem(icon: Icon(Icons.person_outline_sharp), label: 'Profil'),
             // BottomNavigationBarItem(icon: Icon(Icons.receipt_long_outlined), label: 'Detail'),
             // BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil2'),

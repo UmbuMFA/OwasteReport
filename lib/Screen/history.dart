@@ -32,7 +32,7 @@ class _historyState extends State<history> {
             onPressed: () => Navigator.pushReplacement(
                 context, MaterialPageRoute(builder: (context) => HomePage()))),
         backgroundColor: Colors.black54,
-        title: Text('History'),
+        title: Text('List Laporan'),
         centerTitle: true,
       ),
       body: StreamBuilder(

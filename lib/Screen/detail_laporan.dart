@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:app_waste_report/Screen/history.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -10,24 +11,14 @@ import 'package:app_waste_report/Models/report.dart';
 
 class ReportDetailsView extends StatelessWidget {
   final DocumentSnapshot documentSnapshot;
-  // DocumentSnapshot docid;
-
-  // final Report report;
 
   ReportDetailsView({Key? key, required this.documentSnapshot})
       : super(key: key);
-// TextEditingController title = TextEditingController();
 
   static HexColor kBgColor = HexColor('e7ded7');
   static HexColor kGreyColor = HexColor('dcdde2');
   static HexColor kSmProductBgColor = HexColor('f9f9f9');
 
-  // final List<SmProduct> smProducts = [
-  //   SmProduct(image: 'assets/images/product-1.png'),
-  //   SmProduct(image: 'assets/images/product-2.png'),
-  //   SmProduct(image: 'assets/images/product-3.png'),
-  //   SmProduct(image: 'assets/images/product-4.png'),
-  // ];
 
   //Creating a reference to the collection 'users'
   CollectionReference collectionReference =
@@ -54,6 +45,8 @@ class ReportDetailsView extends StatelessWidget {
 
   // TextEditingController title = TextEditingController(text: .docid.get('title'));
 
+  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,15 +61,6 @@ class ReportDetailsView extends StatelessWidget {
             color: Colors.black,
           ),
         ),
-        // actions: [
-        //   IconButton(
-        //     onPressed: () {},
-        //     icon: const Icon(
-        //       Ionicons.bag_outline,
-        //       color: Colors.black,
-        //     ),
-        //   ),
-        // ],
       ),
       body: Container(
         width: MediaQuery.of(context).size.width,
@@ -160,38 +144,9 @@ class ReportDetailsView extends StatelessWidget {
                               color: Color.fromARGB(255, 0, 0, 0),
                             ),
                           ),
-                          const SizedBox(height: 15),
-                          // Text(
-                          //   'Similar This',
-                          //   style: GoogleFonts.poppins(
-                          //     fontSize: 16,
-                          //     fontWeight: FontWeight.w600,
-                          //   ),
-                          // ),
-                          const SizedBox(height: 10),
-                          // SizedBox(
-                          //   height: 110,
-                          //   child: ListView.builder(
-                          //     scrollDirection: Axis.horizontal,
-                          //     // itemCount: smProducts.length,
-                          //     itemBuilder: (context, index) => Container(
-                          //       margin: const EdgeInsets.only(right: 6),
-                          //       width: 110,
-                          //       height: 110,
-                          //       decoration: BoxDecoration(
-                          //         color: kSmProductBgColor,
-                          //         borderRadius: BorderRadius.circular(20),
-                          //       ),
-                          //       child: Center(
-                          //         // child: Image(
-                          //         //   height: 70,
-                          //         //   image: AssetImage(smProducts[index].image),
-                          //         // ),
-                          //       ),
-                          //     ),
-                          //   ),
-                          // ),
-                          const SizedBox(height: 20),
+                          // const SizedBox(height: 15),
+                          // const SizedBox(height: 10),
+                          // const SizedBox(height: 20),
                         ],
                       ),
                     ),
